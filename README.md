@@ -6,7 +6,7 @@
 npx claude-toad init
 ```
 
-You've written a CLAUDE.md, rewritten it, then read a blog post that told you everything you put in it was wrong. You've hit 300 lines before learning Anthropic recommends under 150, and that "as instruction count increases, instruction-following quality decreases uniformly." You've entered the settings.json maze where "a setting that works one day mysteriously breaks the next because it's being overridden by another file you forgot existed."
+You've written a CLAUDE.md, rewritten it, then watched a YouTube video that told you everything you put in it was wrong. You've hit 300 lines before learning Anthropic recommends under 150, and that "as instruction count increases, instruction-following quality decreases uniformly." You've entered the settings.json maze where "a setting that works one day mysteriously breaks the next because it's being overridden by another file you forgot existed."
 
 You've read 12 blog posts about configuring Claude Code. You're still not sure you did it right.
 
@@ -96,7 +96,7 @@ npx claude-toad install my-team-config.zip
 
 ### `add-skill` — Generate custom skills from any source
 
-Turn your own material into production-ready skills. Accepts YouTube videos, PDFs, documentation, URLs, audio files, and raw text. Integrates with [Smidge](https://smdg.app) for skill generation. Requires a Smidge API key (prompted on first use).
+Turn your own material into production-ready skills. Accepts multiple YouTube videos, PDFs, documentation, URLs, audio files, and raw text. Integrates with [Smidge](https://smdg.app) for skill generation. Requires a Smidge API key (prompted on first use).
 
 ```
 npx claude-toad add-skill --from "https://youtube.com/watch?v=..."
@@ -184,7 +184,7 @@ npx claude-toad add-skill --from "./docs/internal-api-guide.pdf"
 npx claude-toad add-skill --from "./training/onboarding-walkthrough.mp4"
 ```
 
-Accepts YouTube videos, PDFs, docs, URLs, audio, and raw text. Smidge handles source extraction, frontmatter generation, progressive disclosure, and constraint levels so the output works across Claude Code, Cursor, Copilot, and 30+ agents.
+Accepts YouTube videos, PDFs, docs, URLs, audio, and raw text. Smidge handles source extraction, frontmatter generation, progressive disclosure, and constraint levels so the output works across Claude Code and 30+ other agents.
 
 Requires a [Smidge](https://smdg.app) account and API key. Generate one from your [Account page](https://smdg.app/account). You'll be prompted to enter it the first time you run `add-skill` — stored locally at `~/.claude-toad/config.json`.
 
@@ -233,5 +233,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions.
 ---
 
 <p align="center">
-<i>Be calm. The toad's got it.</i>
+<i>Relax. The Toad's got it.</i>
 </p>
