@@ -19,6 +19,16 @@ export async function writeFiles(
   const claudeDir = path.join(projectPath, ".claude");
   const writtenFiles: string[] = [];
 
+  // Back up existing root-level CLAUDE.md if present
+  const rootClaudeMd = path.join(projectPath, "CLAUDE.md");
+  if (await fs.pathExists(rootClaudeMd)) {
+    if (!options.dryRun) {
+      const backupPath = path.join(projectPath, "CLAUDE.md.backup");
+      await fs.copy(rootClaudeMd, backupPath, { overwrite: true });
+      logger.info("Backed up existing CLAUDE.md to CLAUDE.md.backup");
+    }
+  }
+
   // Handle existing .claude/ directory
   if (await fs.pathExists(claudeDir)) {
     if (!options.force && !options.dryRun) {
