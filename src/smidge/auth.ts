@@ -17,9 +17,9 @@ export async function resolveSmidgeKey(
   // 4. Interactive prompt
   const key = await input({
     message:
-      "Enter your Smidge API key (get one at smdg.app/settings/api-keys):",
+      "Enter your Smidge API key (get one at smdg.app/account):",
     validate: (value) => {
-      if (!value.trim()) return "API key is required. Get one at smdg.app/settings/api-keys";
+      if (!value.trim()) return "API key is required. Get one at smdg.app/account";
       return true;
     },
   });

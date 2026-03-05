@@ -26,7 +26,7 @@ export async function addSkillCommand(options: AddSkillOptions): Promise<void> {
         "add-skill integrates with Smidge for custom skill generation."
       );
       logger.blank();
-      logger.info("Get your API key at https://smdg.app/settings/api-keys");
+      logger.info("Get your API key at https://smdg.app/account");
       return;
     }
 
@@ -53,7 +53,7 @@ export async function addSkillCommand(options: AddSkillOptions): Promise<void> {
       logger.info("Purchase credits at https://smdg.app/pricing");
     } else if (err.message.includes("Invalid or missing API key")) {
       logger.error("Smidge API key is invalid or revoked.");
-      logger.info("Check your key at https://smdg.app/settings/api-keys");
+      logger.info("Check your key at https://smdg.app/account");
     } else {
       logger.error(`Generation failed: ${err.message}`);
     }

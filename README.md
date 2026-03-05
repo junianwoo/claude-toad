@@ -96,7 +96,7 @@ npx claude-toad install my-team-config.zip
 
 ### `add-skill` — Generate custom skills from any source
 
-Turn your own material into production-ready skills. Accepts YouTube videos, PDFs, documentation, URLs, audio files, and raw text. Integrates with [Smidge](https://smdg.app) for skill generation.
+Turn your own material into production-ready skills. Accepts YouTube videos, PDFs, documentation, URLs, audio files, and raw text. Integrates with [Smidge](https://smdg.app) for skill generation. Requires a Smidge API key (prompted on first use).
 
 ```
 npx claude-toad add-skill --from "https://youtube.com/watch?v=..."
@@ -186,7 +186,7 @@ npx claude-toad add-skill --from "./training/onboarding-walkthrough.mp4"
 
 Accepts YouTube videos, PDFs, docs, URLs, audio, and raw text. Smidge handles source extraction, frontmatter generation, progressive disclosure, and constraint levels so the output works across Claude Code, Cursor, Copilot, and 30+ agents.
 
-Requires a [Smidge](https://smdg.app) account.
+Requires a [Smidge](https://smdg.app) account and API key. Generate one from your [Account page](https://smdg.app/account). You'll be prompted to enter it the first time you run `add-skill` — stored locally at `~/.claude-toad/config.json`.
 
 ---
 
@@ -228,6 +228,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions.
 
 - Node.js 18+
 - Anthropic API key ([get one here](https://console.anthropic.com))
+- Smidge API key for `add-skill` only ([get one here](https://smdg.app/account))
 
 ---
 
