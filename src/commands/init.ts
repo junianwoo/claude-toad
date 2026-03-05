@@ -20,13 +20,7 @@ export async function initCommand(options: InitOptions): Promise<void> {
   const projectPath = process.cwd();
 
   try {
-    // Resolve API key
-    const apiKey = await resolveApiKey(options.apiKey);
-
-    // Resolve model
-    const model = resolveModel(options.model || "opus");
-
-    // Scan project
+    // Scan project first (no API key needed)
     logger.start("Scanning project...");
     const fingerprint = await scanProject(projectPath);
     logger.success("Project scanned");
@@ -47,6 +41,12 @@ export async function initCommand(options: InitOptions): Promise<void> {
         return;
       }
     }
+
+    // Resolve API key (only needed for generation)
+    const apiKey = await resolveApiKey(options.apiKey);
+
+    // Resolve model
+    const model = resolveModel(options.model || "opus");
 
     // Generate
     logger.blank();
