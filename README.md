@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="media/ClaudeToad.PNG" alt="Claude Toad" width="200"/>
+</p>
+
 # Claude Toad
 
 Scans your project. Generates your entire `.claude/` directory. One command.
@@ -21,8 +25,6 @@ Claude Toad reads your repo, figures out what you're working with, calls Claude 
 ---
 
 ## What it looks like
-
-![Claude Toad demo](media/ClaudeToad.PNG)
 
 ```
 $ cd my-project
