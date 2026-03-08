@@ -22,46 +22,7 @@ Claude Toad reads your repo, figures out what you're working with, calls Claude 
 
 ## What it looks like
 
-```
-$ cd my-project
-$ npx claude-toad init
-
-    ____  
-    |##|  
-   _|##|_ 
-    @..@    Claude Toad v0.1.0
-   (----) 
-  ( >__< )  Be calm. The toad's got it.
-  ^^ ~~ ^^
-
-  Project scanned
-
-    Language   typescript (strict)
-    Framework  next.js (app router)
-    Database   prisma + postgres
-    Testing    vitest
-    Hosting    vercel
-    Services   github, stripe
-
-  Generate .claude/ configuration? (Y/n) Yes
-
-  Generating configuration... (4/4)
-
-  Created:
-
-    .claude/CLAUDE.md                     87 lines
-    .claude/skills/nextjs-patterns.md     189 lines
-    .claude/skills/prisma-patterns.md     154 lines
-    .claude/skills/vitest-testing.md      201 lines
-    .claude/agents/code-reviewer.md       92 lines
-    .claude/agents/pr-writer.md           78 lines
-    .claude/commands/test.md              24 lines
-    .claude/commands/deploy.md            38 lines
-    .claude/settings.json
-    .mcp.json
-
-  Done. Claude Code is ready for this project.
-```
+![Claude Toad demo](demo.svg)
 
 Then you open Claude Code and it just... knows.
 
