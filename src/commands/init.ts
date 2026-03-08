@@ -15,7 +15,6 @@ interface InitOptions {
   mcp?: boolean;
   apiKey?: string;
   model?: string;
-  regenerate?: string;
 }
 
 export async function initCommand(options: InitOptions): Promise<void> {

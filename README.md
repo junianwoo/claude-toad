@@ -33,7 +33,7 @@ $ npx claude-toad init
     ____
     |##|
    _|##|_
-    @..@    Claude Toad v0.1.1
+    @..@    Claude Toad v0.1.2
    (----)
   ( >__< )  Be calm. The toad's got it.
   ^^ ~~ ^^
@@ -139,14 +139,16 @@ More coming. [Adding a framework takes one PR.](CONTRIBUTING.md)
 
 ## Flags
 
+All flags apply to the `init` command:
+
 ```
---dry-run       See what would be generated without writing anything.
---model sonnet  Use Sonnet instead of the default (Opus).
---force         Skip confirmation prompts.
---verbose       Show the full project scan.
---no-agents     Skip agent generation.
---no-mcp        Skip MCP configuration.
---api-key KEY   Pass key directly (for CI/scripts).
+claude-toad init --dry-run       See what would be generated without writing anything.
+claude-toad init --model sonnet  Use Sonnet instead of the default (Opus).
+claude-toad init --force         Skip confirmation prompts.
+claude-toad init --verbose       Show the full project scan.
+claude-toad init --no-agents     Skip agent generation.
+claude-toad init --no-mcp        Skip MCP configuration.
+claude-toad init --api-key KEY   Pass key directly (for CI/scripts).
 ```
 
 ---

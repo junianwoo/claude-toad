@@ -23,7 +23,6 @@ program
   .option("--no-mcp", "Skip MCP configuration")
   .option("--api-key <key>", "Anthropic API key")
   .option("--model <model>", "Model to use (opus or sonnet)", "opus")
-  .option("--regenerate <target>", "Regenerate a specific file or group")
   .action(initCommand);
 
 program

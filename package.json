@@ -22,8 +22,19 @@
     "configuration",
     "developer-tools"
   ],
-  "author": "",
+  "author": {
+    "name": "Albert Woo",
+    "url": "https://github.com/junianwoo"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/junianwoo/claude-toad.git"
+  },
+  "bugs": {
+    "url": "https://github.com/junianwoo/claude-toad/issues"
+  },
+  "homepage": "https://github.com/junianwoo/claude-toad#readme",
   "engines": {
     "node": ">=18"
   },
