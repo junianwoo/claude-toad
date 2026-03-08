@@ -45,8 +45,21 @@ export async function generate(
   const client = new Anthropic({ apiKey });
   const usage: TokenUsage[] = [];
 
+  const totalCalls = options.skipAgents ? 3 : 4;
+  let currentCall = 0;
+
+  const progressStart = (label: string) => {
+    currentCall++;
+    const msg = `Generating configuration... (${currentCall}/${totalCalls})  ${label}`;
+    if (currentCall === 1) {
+      logger.start(msg);
+    } else {
+      logger.updateSpinner(msg);
+    }
+  };
+
   // Call 1: CLAUDE.md
-  logger.start("Generating CLAUDE.md...");
+  progressStart("CLAUDE.md");
   const claudeMdResponse = await callApi(
     client,
     model,
@@ -58,10 +71,9 @@ export async function generate(
     inputTokens: claudeMdResponse.inputTokens,
     outputTokens: claudeMdResponse.outputTokens,
   });
-  logger.success("CLAUDE.md generated");
 
   // Call 2: Skills
-  logger.start("Generating skills...");
+  progressStart("skills");
   const skillsResponse = await callApi(
     client,
     model,
@@ -73,12 +85,11 @@ export async function generate(
     inputTokens: skillsResponse.inputTokens,
     outputTokens: skillsResponse.outputTokens,
   });
-  logger.success(`${skills.length} skill(s) generated`);
 
   // Call 3: Agents (optional)
   let agents: GeneratedFile[] = [];
   if (!options.skipAgents) {
-    logger.start("Generating agents...");
+    progressStart("agents");
     const agentsResponse = await callApi(
       client,
       model,
@@ -90,11 +101,10 @@ export async function generate(
       inputTokens: agentsResponse.inputTokens,
       outputTokens: agentsResponse.outputTokens,
     });
-    logger.success(`${agents.length} agent(s) generated`);
   }
 
   // Call 4: Commands + Hooks
-  logger.start("Generating commands and hooks...");
+  progressStart("commands");
   const commandsResponse = await callApi(
     client,
     model,
@@ -119,7 +129,7 @@ export async function generate(
       logger.warn("Could not parse hooks output — skipping hooks");
     }
   }
-  logger.success(`${commands.length} command(s) generated`);
+  logger.success(`Generating configuration... (${totalCalls}/${totalCalls})`);
 
   // Template-based: settings.json (no API call)
   const settings = generateSettings(fingerprint, hooks);
@@ -208,23 +218,46 @@ function generateSettings(
   // Build permissions based on detected tools
   const allow: string[] = ["Read", "Grep", "Glob"];
 
+  // Track wildcard prefixes to avoid redundant specific commands
+  const wildcardPrefixes: string[] = [];
+
   if (fingerprint.packageManager) {
-    allow.push(`Bash(${fingerprint.packageManager} run *)`);
+    const wildcard = `Bash(${fingerprint.packageManager} run *)`;
+    allow.push(wildcard);
+    wildcardPrefixes.push(`${fingerprint.packageManager} run `);
   }
 
-  if (fingerprint.testing.testCommand) {
+  const isRedundant = (cmd: string) =>
+    wildcardPrefixes.some((prefix) => cmd.startsWith(prefix));
+
+  if (fingerprint.testing.testCommand && !isRedundant(fingerprint.testing.testCommand)) {
     allow.push(`Bash(${fingerprint.testing.testCommand})`);
   }
 
-  if (fingerprint.linting.lintCommand) {
+  if (fingerprint.linting.lintCommand && !isRedundant(fingerprint.linting.lintCommand)) {
     allow.push(`Bash(${fingerprint.linting.lintCommand})`);
   }
 
   settings.permissions = { allow };
 
-  // Add hooks if generated
+  // Build hooks: start with preCommit lint hook if linter detected, then merge AI-generated hooks
+  const mergedHooks: Record<string, unknown> = {};
+
+  if (fingerprint.linting.lintCommand) {
+    mergedHooks.preCommit = [
+      {
+        command: `${fingerprint.linting.lintCommand} 2>&1 | head -50`,
+        description: "Lint check before committing changes",
+      },
+    ];
+  }
+
   if (hooks && Object.keys(hooks).length > 0) {
-    settings.hooks = hooks;
+    Object.assign(mergedHooks, hooks);
+  }
+
+  if (Object.keys(mergedHooks).length > 0) {
+    settings.hooks = mergedHooks;
   }
 
   return JSON.stringify(settings, null, 2);

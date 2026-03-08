@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash(npm run *)",
+      "Bash(npm test)"
+    ]
+  },
+  "hooks": {
+    "preCommit": [
+      {
+        "command": "npm run lint 2>&1 | head -50",
+        "description": "Lint check before committing changes"
+      }
+    ],
+    "postWrite": [
+      {
+        "command": "npx tsc --noEmit --pretty 2>&1 | head -50",
+        "description": "Type check after file changes",
+        "globs": [
+          "*.ts",
+          "*.tsx"
+        ]
+      }
+    ]
+  }
+}

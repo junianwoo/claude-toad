@@ -11,14 +11,21 @@ RULES:
 - Maximum 120 lines (leave headroom under the 150 line recommendation)
 - First line: "# ${fingerprint.projectName || "Project"}"
 - Second line: One-sentence description from the README summary or inferred from the stack
-- Sections: Tech Stack, Architecture, Key Commands, Conventions, Gotchas
+- Sections: Tech Stack, Architecture, Key Commands, Conventions, Skills, Gotchas
 - Key Commands: use ACTUAL commands from the project analysis (e.g., the real test command, build command). If a package manager is detected, use it (e.g., "pnpm dev" not "npm run dev").
 - Conventions: language-specific and project-specific (e.g., "functional components with hooks" for React, "type hints on all functions" for Python)
 - Do NOT include deep framework patterns (those go in skills — reference them with @import)
 - Do NOT include detailed testing strategies (those go in skills)
 - Do NOT include agent configurations or commands
-- Reference skills using: @import skills/[name].md
 - Use concise bullet points. No prose paragraphs. No filler.
+- Include a ## Skills section near the bottom of the file (before Gotchas) that lists @import references for every skill that will be generated. The skill filenames follow the pattern: skills/<domain>.md. Based on the detected stack, include @import lines for each relevant domain: framework patterns, database patterns, testing patterns, deployment patterns, monorepo patterns, etc. Only include @import lines for skills that will actually be generated based on the project analysis. Example format:
+
+## Skills
+
+@import skills/nextjs-patterns.md
+@import skills/prisma-patterns.md
+@import skills/vitest-testing.md
+
 - End with a Gotchas section listing non-obvious project specifics
 - Every line must earn its place. If it's obvious, omit it.
 
@@ -54,6 +61,17 @@ RULES for each skill:
 - Include: patterns to follow, patterns to avoid, file organization conventions
 - Be concrete: reference actual directories and file patterns from the project structure
 - If the project has specific conventions visible in the analysis, encode them
+- Every skill must begin its content (after the YAML frontmatter) with a routing directive block that tells Claude when to read this skill. Format:
+
+> **When to read this skill:** [Specific trigger condition referencing actual file paths and patterns from this project. Be concrete about which files, directories, or operations should trigger loading this skill.]
+
+For example, a Supabase skill would say:
+> **When to read this skill:** Before editing, creating, or reviewing any files in supabase/, any .sql files, or any code that imports the Supabase client. Read this skill completely before making database changes.
+
+A monorepo skill would say:
+> **When to read this skill:** Before adding new packages, modifying workspace dependencies, or changing cross-package imports. Read this skill when working across multiple workspace boundaries.
+
+The routing directive must be specific to what the skill covers and reference the actual file paths and patterns from this project.
 
 Format: wrap each skill in XML tags:
 <file path="skills/[name].md">
