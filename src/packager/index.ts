@@ -133,7 +133,11 @@ export async function installPackage(
         logger.info("Backed up existing .claude/ to .claude.backup/");
       }
     } else {
+      const backupDir = path.join(targetPath, '.claude.backup');
+      await fs.remove(backupDir);
+      await fs.copy(claudeDir, backupDir);
       await fs.remove(claudeDir);
+      logger.info('Backed up existing .claude/ to .claude.backup/');
     }
   }
 

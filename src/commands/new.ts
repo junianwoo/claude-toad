@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import path from "path";
 import { askProjectQuestions } from "../scaffolder/questions.js";
 import { scaffoldProject, buildSyntheticFingerprint } from "../scaffolder/index.js";
@@ -5,6 +6,7 @@ import { generate } from "../generator/index.js";
 import { writeFiles } from "../writer/index.js";
 import { resolveApiKey, resolveModel } from "../utils/api-key.js";
 import { logger } from "../utils/logger.js";
+import { getVersion } from "../utils/version.js";
 
 interface NewOptions {
   apiKey?: string;
@@ -14,6 +16,8 @@ interface NewOptions {
 
 export async function newCommand(options: NewOptions): Promise<void> {
   try {
+    logger.banner(getVersion());
+
     // Ask project questions
     const answers = await askProjectQuestions();
 
@@ -45,8 +49,15 @@ export async function newCommand(options: NewOptions): Promise<void> {
     logger.success(`Project created at ./${answers.projectName}`);
     logger.blank();
     logger.log("  Created:");
+    logger.blank();
+    const pathWidth = Math.max(...written.map((f) => f.path.length));
     for (const file of written) {
-      logger.log(`    ${file}`);
+      if (file.lines !== null) {
+        const padded = file.path.padEnd(pathWidth + 2);
+        logger.log(`    ${chalk.dim(padded)}${chalk.dim(file.lines + " lines")}`);
+      } else {
+        logger.log(`    ${chalk.dim(file.path)}`);
+      }
     }
     logger.blank();
     logger.log("  Next steps:");

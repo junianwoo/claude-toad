@@ -1,10 +1,10 @@
 {
   "name": "claude-toad",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "One command. Your entire Claude Code setup. Done.",
   "type": "module",
   "bin": {
-    "claude-toad": "./dist/index.js"
+    "claude-toad": "dist/index.js"
   },
   "main": "./dist/index.js",
   "scripts": {
