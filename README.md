@@ -22,7 +22,7 @@ Claude Toad reads your repo, figures out what you're working with, calls Claude 
 
 ## What it looks like
 
-![Claude Toad demo](demo.svg)
+![Claude Toad demo](media/demo.png)
 
 Then you open Claude Code and it just... knows.
 
