@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="media/ClaudeToad.PNG" alt="Claude Toad" width="200"/>
+  <img src="media/ClaudeToad.PNG" alt="Claude Toad" width="600"/>
 </p>
 
 # Claude Toad
