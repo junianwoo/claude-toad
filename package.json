@@ -1,6 +1,6 @@
 {
   "name": "claude-toad",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "One command. Your entire Claude Code setup. Done.",
   "type": "module",
   "bin": {
