@@ -21,7 +21,7 @@ export interface GeneratedSkill {
 export async function detectTopics(
   source: string,
   smidgeKey: string
-): Promise<{ shouldCatalogue: boolean; wordCount: number; topics: DetectedTopic[] }> {
+): Promise<{ shouldCatalogue: boolean; wordCount: number; topics: DetectedTopic[]; isUnlimited: boolean }> {
   const formData = new FormData();
 
   if (source.startsWith("http://") || source.startsWith("https://")) {
@@ -58,9 +58,10 @@ export async function detectTopics(
     shouldCatalogue: boolean;
     wordCount: number;
     topics: DetectedTopic[];
+    isUnlimited?: boolean;
   };
 
-  return data;
+  return { ...data, isUnlimited: data.isUnlimited ?? false };
 }
 
 export async function generateSkill(

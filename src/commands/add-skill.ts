@@ -57,7 +57,7 @@ export async function addSkillCommand(options: AddSkillOptions): Promise<void> {
 
     // Phase 1 — detect topics
     logger.start("Analyzing source...");
-    let detection: { shouldCatalogue: boolean; wordCount: number; topics: DetectedTopic[] };
+    let detection: { shouldCatalogue: boolean; wordCount: number; topics: DetectedTopic[]; isUnlimited: boolean };
     try {
       detection = await detectTopics(options.from, smidgeKey);
     } catch (err) {
@@ -104,7 +104,7 @@ export async function addSkillCommand(options: AddSkillOptions): Promise<void> {
 
       formatFileList(fileList);
       logger.blank();
-      logger.log(`  Credits remaining: ${result.creditsRemaining}`);
+      logger.log(detection.isUnlimited ? `  Unlimited plan` : `  Credits remaining: ${result.creditsRemaining}`);
       logger.blank();
       return;
     }
@@ -149,21 +149,25 @@ export async function addSkillCommand(options: AddSkillOptions): Promise<void> {
       logger.blank();
       const nameWidth = Math.max(...selected.map((t) => t.topicName.length));
       for (const t of selected) {
-        logger.log(`    ${chalk.green("✓")} ${t.topicName.padEnd(nameWidth + 2)}${chalk.dim("1 credit")}`);
+        logger.log(`    ${chalk.green("✓")} ${t.topicName.padEnd(nameWidth + 2)}${chalk.dim(detection.isUnlimited ? "unlimited" : "1 credit")}`);
       }
       logger.blank();
 
-      const ok = await confirm({
-        message: `Use ${selected.length} credit${selected.length !== 1 ? "s" : ""}? Continue?`,
-        default: true,
-      });
-
-      if (ok) {
+      if (detection.isUnlimited) {
         confirmed = true;
       } else {
-        // Go back — preserve the current selection for the next round
-        previouslySelected = new Set(selected.map((t) => t.slug));
-        logger.blank();
+        const ok = await confirm({
+          message: `Use ${selected.length} credit${selected.length !== 1 ? "s" : ""}? Continue?`,
+          default: true,
+        });
+
+        if (ok) {
+          confirmed = true;
+        } else {
+          // Go back — preserve the current selection for the next round
+          previouslySelected = new Set(selected.map((t) => t.slug));
+          logger.blank();
+        }
       }
     }
 
@@ -225,7 +229,7 @@ export async function addSkillCommand(options: AddSkillOptions): Promise<void> {
     logger.blank();
     formatFileList(fileList);
     logger.blank();
-    logger.log(`  Credits remaining: ${catalogue.creditsRemaining}`);
+    logger.log(detection.isUnlimited ? `  Unlimited plan` : `  Credits remaining: ${catalogue.creditsRemaining}`);
     logger.blank();
   } catch (error: unknown) {
     const err = error as Error;
