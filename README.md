@@ -14,13 +14,9 @@ npx claude-toad init
 
 ## Why this exists
 
-I kept starting new Claude Code sessions and watching the agent ask the same questions every single time. What framework is this? Where are the tests? How do I run the dev server? I watched a YouTube video and tried writing a CLAUDE.md myself. Ended up rewriting it several times. Then I read a blog post that said everything I put in it was wrong. Hit 300 lines before learning Anthropic recommends under 150. Learned that "as instruction count increases, instruction-following quality decreases uniformly."
+I was getting tired of rewriting my CLAUDE.md and still never sure I was doing it right. Every new Claude Code session starts from zero, and without a solid config, I'd end up repeating myself or watching it make assumptions I'd already corrected. I've also heard from others it took them months to get their configs right. So I built Claude Toad.
 
-After that I discovered skills, agents, commands, hooks, settings.json scope hierarchies, and .mcp.json. Eight configuration surfaces, each with their own format. I realized the CLAUDE.md was just the beginning of the problem.
-
-So, I decided to build a thing that does it for me.
-
-Claude Toad reads your repo, figures out what you're working with, calls Claude API (your key, your tokens), and generates the whole `.claude/` directory. You get a configuration built from what's actually in your project.
+Claude Toad reads your repo, figures out what you're working with, calls Claude API (your key, your tokens), and generates the whole .claude/ directory. You get a configuration built from what's actually in your project.
 
 ---
 
