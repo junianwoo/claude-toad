@@ -7,7 +7,7 @@ import {
   buildCommandsPrompt,
 } from "./prompts.js";
 import { parseSingleFile, parseMultipleFiles } from "./parser.js";
-import { logger } from "../utils/logger.js";
+import { logger, createPhaseRenderer } from "../utils/logger.js";
 
 export interface GeneratedFile {
   path: string;
@@ -45,9 +45,6 @@ export async function generate(
   const client = new Anthropic({ apiKey });
   const usage: TokenUsage[] = [];
 
-  const totalCalls = options.skipAgents ? 3 : 4;
-  let currentCall = 0;
-
   const phaseMessages: Record<string, string[]> = {
     "CLAUDE.md": [
       "Archaeologically excavating your repo...",
@@ -75,78 +72,57 @@ export async function generate(
     ],
   };
 
-  const progressStart = (label: string): ReturnType<typeof setInterval> => {
-    currentCall++;
+  const phaseLabels = options.skipAgents
+    ? ["CLAUDE.md", "skills", "commands"]
+    : ["CLAUDE.md", "skills", "agents", "commands"];
+
+  logger.stopSpinner();
+  const renderer = createPhaseRenderer(phaseLabels);
+
+  const runPhase = async (label: string, index: number, call: () => Promise<{ content: string; inputTokens: number; outputTokens: number }>): Promise<{ content: string; inputTokens: number; outputTokens: number }> => {
     const messages = phaseMessages[label] ?? [label];
     let i = 0;
-    const msg = `(${currentCall}/${totalCalls})  ${label}  —  ${messages[0]}`;
-    if (currentCall === 1) {
-      logger.start(msg);
-    } else {
-      logger.updateSpinner(msg);
-    }
-    return setInterval(() => {
+    renderer.setActive(index, messages[0]);
+    const interval = setInterval(() => {
       i = (i + 1) % messages.length;
-      logger.updateSpinner(`(${currentCall}/${totalCalls})  ${label}  —  ${messages[i]}`);
+      renderer.updateMessage(messages[i]);
     }, 4000);
+    const result = await call();
+    clearInterval(interval);
+    renderer.complete(index);
+    return result;
   };
 
   // Call 1: CLAUDE.md
-  let interval = progressStart("CLAUDE.md");
-  const claudeMdResponse = await callApi(
-    client,
-    model,
-    buildClaudeMdPrompt(fingerprint)
+  const claudeMdResponse = await runPhase("CLAUDE.md", 0, () =>
+    callApi(client, model, buildClaudeMdPrompt(fingerprint))
   );
-  clearInterval(interval);
   const claudeMd = parseSingleFile(claudeMdResponse.content);
-  usage.push({
-    call: "CLAUDE.md",
-    inputTokens: claudeMdResponse.inputTokens,
-    outputTokens: claudeMdResponse.outputTokens,
-  });
+  usage.push({ call: "CLAUDE.md", inputTokens: claudeMdResponse.inputTokens, outputTokens: claudeMdResponse.outputTokens });
 
   // Call 2: Skills
-  interval = progressStart("skills");
-  const skillsResponse = await callApi(
-    client,
-    model,
-    buildSkillsPrompt(fingerprint, claudeMd)
+  const skillsResponse = await runPhase("skills", 1, () =>
+    callApi(client, model, buildSkillsPrompt(fingerprint, claudeMd))
   );
-  clearInterval(interval);
   const skills = parseMultipleFiles(skillsResponse.content);
-  usage.push({
-    call: "Skills",
-    inputTokens: skillsResponse.inputTokens,
-    outputTokens: skillsResponse.outputTokens,
-  });
+  usage.push({ call: "Skills", inputTokens: skillsResponse.inputTokens, outputTokens: skillsResponse.outputTokens });
 
   // Call 3: Agents (optional)
   let agents: GeneratedFile[] = [];
   if (!options.skipAgents) {
-    interval = progressStart("agents");
-    const agentsResponse = await callApi(
-      client,
-      model,
-      buildAgentsPrompt(fingerprint, claudeMd)
+    const agentsResponse = await runPhase("agents", 2, () =>
+      callApi(client, model, buildAgentsPrompt(fingerprint, claudeMd))
     );
-    clearInterval(interval);
     agents = parseMultipleFiles(agentsResponse.content);
-    usage.push({
-      call: "Agents",
-      inputTokens: agentsResponse.inputTokens,
-      outputTokens: agentsResponse.outputTokens,
-    });
+    usage.push({ call: "Agents", inputTokens: agentsResponse.inputTokens, outputTokens: agentsResponse.outputTokens });
   }
 
   // Call 4: Commands + Hooks
-  interval = progressStart("commands");
-  const commandsResponse = await callApi(
-    client,
-    model,
-    buildCommandsPrompt(fingerprint)
+  const commandsIndex = options.skipAgents ? 2 : 3;
+  const commandsResponse = await runPhase("commands", commandsIndex, () =>
+    callApi(client, model, buildCommandsPrompt(fingerprint))
   );
-  clearInterval(interval);
+  renderer.stop();
   const commandFiles = parseMultipleFiles(commandsResponse.content);
   usage.push({
     call: "Commands",
@@ -166,7 +142,6 @@ export async function generate(
       logger.warn("Could not parse hooks output — skipping hooks");
     }
   }
-  logger.success(`Generating configuration... (${totalCalls}/${totalCalls})`);
 
   // Template-based: settings.json (no API call)
   const settings = generateSettings(fingerprint, hooks);

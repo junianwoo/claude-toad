@@ -93,3 +93,72 @@ export const logger = {
     }
   },
 };
+
+const SPINNER_FRAMES = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"];
+const LABEL_WIDTH = 10;
+
+export interface PhaseRenderer {
+  setActive(index: number, message: string): void;
+  updateMessage(message: string): void;
+  complete(index: number): void;
+  stop(): void;
+}
+
+export function createPhaseRenderer(labels: string[]): PhaseRenderer {
+  const completed = new Set<number>();
+  let activeIndex = 0;
+  let activeMessage = "";
+  let frameIndex = 0;
+  let firstRender = true;
+
+  const render = (): void => {
+    const lines = labels.map((label, i) => {
+      const padded = label.padEnd(LABEL_WIDTH);
+      if (completed.has(i)) {
+        return `  ${chalk.green("✓")} ${chalk.bold(padded)}  ${chalk.dim("done")}`;
+      } else if (i === activeIndex) {
+        const frame = chalk.green(SPINNER_FRAMES[frameIndex]);
+        return `  ${frame} ${chalk.bold(padded)}  ${activeMessage}`;
+      } else {
+        return `  ${chalk.dim("○")} ${chalk.dim(padded)}  ${chalk.dim("waiting")}`;
+      }
+    });
+
+    if (!firstRender) {
+      process.stdout.write(`\x1b[${labels.length}A`);
+    }
+    firstRender = false;
+
+    for (const line of lines) {
+      process.stdout.write(`\x1b[2K\r${line}\n`);
+    }
+  };
+
+  console.log();
+  render();
+
+  const animInterval = setInterval(() => {
+    frameIndex = (frameIndex + 1) % SPINNER_FRAMES.length;
+    render();
+  }, 80);
+
+  return {
+    setActive(index: number, message: string): void {
+      activeIndex = index;
+      activeMessage = message;
+      render();
+    },
+    updateMessage(message: string): void {
+      activeMessage = message;
+    },
+    complete(index: number): void {
+      completed.add(index);
+      render();
+    },
+    stop(): void {
+      clearInterval(animInterval);
+      render();
+      console.log();
+    },
+  };
+}
