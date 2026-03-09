@@ -79,7 +79,7 @@ export async function generate(
     currentCall++;
     const messages = phaseMessages[label] ?? [label];
     let i = 0;
-    const msg = `(${currentCall}/${totalCalls})  ${messages[0]}`;
+    const msg = `(${currentCall}/${totalCalls})  ${label}  —  ${messages[0]}`;
     if (currentCall === 1) {
       logger.start(msg);
     } else {
@@ -87,8 +87,8 @@ export async function generate(
     }
     return setInterval(() => {
       i = (i + 1) % messages.length;
-      logger.updateSpinner(`(${currentCall}/${totalCalls})  ${messages[i]}`);
-    }, 2500);
+      logger.updateSpinner(`(${currentCall}/${totalCalls})  ${label}  —  ${messages[i]}`);
+    }, 4000);
   };
 
   // Call 1: CLAUDE.md
