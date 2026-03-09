@@ -27,7 +27,7 @@ Claude Toad reads your repo, figures out what you're working with, calls Claude 
 ## What it looks like
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/junianwoo/claude-toad/master/media/demo.png" alt="claude-toad init demo" width="600"/>
+  <video src="https://github.com/user-attachments/assets/13c5a37e-537a-4fb9-a6f8-a4738673e6ef" autoplay loop muted playsinline width="600"></video>
 </p>
 
 Then you open Claude Code and it just... knows.
