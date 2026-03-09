@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="media/ClaudeToad.PNG" alt="Claude Toad" width="600"/>
+  <img src="https://raw.githubusercontent.com/junianwoo/claude-toad/master/media/ClaudeToad.PNG" alt="Claude Toad" width="600"/>
 </p>
 
 # Claude Toad
@@ -27,7 +27,7 @@ Claude Toad reads your repo, figures out what you're working with, calls Claude 
 ## What it looks like
 
 <p align="center">
-  <img src="media/demo.png" alt="claude-toad init demo" width="600"/>
+  <img src="https://raw.githubusercontent.com/junianwoo/claude-toad/master/media/demo.png" alt="claude-toad init demo" width="600"/>
 </p>
 
 Then you open Claude Code and it just... knows.
