@@ -123,8 +123,17 @@ claude-toad init --api-key KEY   Pass key directly (for CI/scripts).
 
 ## Setup
 
+Run without installing:
+
 ```
 npx claude-toad init
+```
+
+Or install globally:
+
+```
+npm install -g claude-toad
+claude-toad init
 ```
 
 First run asks for your Anthropic API key. Stored locally at `~/.claude-toad/config.json`. Never sent anywhere except directly to Anthropic's API. If you already have `ANTHROPIC_API_KEY` set, Claude Toad picks it up automatically.
