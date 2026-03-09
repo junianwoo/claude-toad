@@ -48,23 +48,57 @@ export async function generate(
   const totalCalls = options.skipAgents ? 3 : 4;
   let currentCall = 0;
 
-  const progressStart = (label: string) => {
+  const phaseMessages: Record<string, string[]> = {
+    "CLAUDE.md": [
+      "Archaeologically excavating your repo...",
+      "Triangulating your stack choices...",
+      "Transmuting your codebase into Claude's language...",
+      "Snooping (we were invited)...",
+    ],
+    "skills": [
+      "Crystallizing your framework knowledge...",
+      "Desiccating your stack into concentrated wisdom...",
+      "Enshrining the context that usually evaporates...",
+      "Alchemizing your setup...",
+    ],
+    "agents": [
+      "Summoning the dream reviewer...",
+      "Manifesting the teammate who reads the diff...",
+      "Osmosing Claude with your definition of good...",
+      "Calibrating taste...",
+    ],
+    "commands": [
+      "Materializing slash commands you didn't know you needed...",
+      "Suturing the finishing touches...",
+      "Festooning with a bow...",
+      "Almost there. The toad is thorough.",
+    ],
+  };
+
+  const progressStart = (label: string): ReturnType<typeof setInterval> => {
     currentCall++;
-    const msg = `Generating configuration... (${currentCall}/${totalCalls})  ${label}`;
+    const messages = phaseMessages[label] ?? [label];
+    let i = 0;
+    const msg = `(${currentCall}/${totalCalls})  ${messages[0]}`;
     if (currentCall === 1) {
       logger.start(msg);
     } else {
       logger.updateSpinner(msg);
     }
+    return setInterval(() => {
+      i = (i + 1) % messages.length;
+      logger.updateSpinner(`(${currentCall}/${totalCalls})  ${messages[i]}`);
+    }, 2500);
   };
 
   // Call 1: CLAUDE.md
-  progressStart("CLAUDE.md");
+  let interval = progressStart("CLAUDE.md");
   const claudeMdResponse = await callApi(
     client,
     model,
     buildClaudeMdPrompt(fingerprint)
   );
+  clearInterval(interval);
   const claudeMd = parseSingleFile(claudeMdResponse.content);
   usage.push({
     call: "CLAUDE.md",
@@ -73,12 +107,13 @@ export async function generate(
   });
 
   // Call 2: Skills
-  progressStart("skills");
+  interval = progressStart("skills");
   const skillsResponse = await callApi(
     client,
     model,
     buildSkillsPrompt(fingerprint, claudeMd)
   );
+  clearInterval(interval);
   const skills = parseMultipleFiles(skillsResponse.content);
   usage.push({
     call: "Skills",
@@ -89,12 +124,13 @@ export async function generate(
   // Call 3: Agents (optional)
   let agents: GeneratedFile[] = [];
   if (!options.skipAgents) {
-    progressStart("agents");
+    interval = progressStart("agents");
     const agentsResponse = await callApi(
       client,
       model,
       buildAgentsPrompt(fingerprint, claudeMd)
     );
+    clearInterval(interval);
     agents = parseMultipleFiles(agentsResponse.content);
     usage.push({
       call: "Agents",
@@ -104,12 +140,13 @@ export async function generate(
   }
 
   // Call 4: Commands + Hooks
-  progressStart("commands");
+  interval = progressStart("commands");
   const commandsResponse = await callApi(
     client,
     model,
     buildCommandsPrompt(fingerprint)
   );
+  clearInterval(interval);
   const commandFiles = parseMultipleFiles(commandsResponse.content);
   usage.push({
     call: "Commands",
