@@ -29,7 +29,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/junianwoo/claude-toad.git"
+    "url": "git+https://github.com/junianwoo/claude-toad.git"
   },
   "bugs": {
     "url": "https://github.com/junianwoo/claude-toad/issues"
